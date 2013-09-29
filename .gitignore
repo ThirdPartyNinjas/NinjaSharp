@@ -1,0 +1,14 @@
+*.cachefile
+*.suo
+*.user
+
+NinjaSharp.Test/NinjaSharp.Test/bin
+NinjaSharp.Test/NinjaSharp.Test/obj
+NinjaSharp.Test/NinjaSharp.TestContent/bin
+NinjaSharp.Test/NinjaSharp.TestContent/obj
+NinjaSharp/bin
+NinjaSharp/obj
+NinjaSharp.Content/bin
+NinjaSharp.Content/obj
+NinjaSharp.ContentExtensions/bin
+NinjaSharp.ContentExtensions/obj
