@@ -13,7 +13,7 @@ namespace ThirdPartyNinjas.NinjaSharp.ContentExtensions
 
 		public override string GetRuntimeReader(TargetPlatform targetPlatform)
 		{
-            return "ThirdPartyNinjas.NinjaSharp.TextureAtlasReader, ThirdPartyNinjas.NinjaSharp";
+            return "ThirdPartyNinjas.NinjaSharp.TextureAtlasReader, NinjaSharp";
 		}
 	}
 }

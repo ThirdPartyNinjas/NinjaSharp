@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ThirdPartyNinjas.NinjaSharp.ContentExtensions
 {
-    [ContentSerializerRuntimeType("ThirdPartyNinjas.NinjaSharp.TextureRegion, ThirdPartyNinjas.NinjaSharp")]
+    [ContentSerializerRuntimeType("ThirdPartyNinjas.NinjaSharp.TextureRegion, NinjaSharp")]
 	public class TextureRegionContent
 	{
 		public Rectangle Bounds { get; set; }
