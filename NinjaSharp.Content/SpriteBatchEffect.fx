@@ -16,9 +16,9 @@ void VertexShaderFunction(inout float4 position : POSITION0,
 	position.xy -= float2(1, -1);
 }
 
-float4 PixelShaderFunction(float2 coords: TEXCOORD0) : COLOR0
+float4 PixelShaderFunction(float4 color : COLOR0, float2 coords: TEXCOORD0) : COLOR0
 {
-	return tex2D(TextureSampler, coords);
+	return color * tex2D(TextureSampler, coords);
 }
 
 technique Technique1

@@ -34,13 +34,6 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 			this.defaultEffect = defaultEffect;
 
 			ResizeBuffers(maxSprites);
-
-			vertexDeclaration = new VertexDeclaration(new VertexElement[]
-			{
-				new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
-				new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0),
-				new VertexElement(24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0)
-			});
 		}
 
 		public void Begin()
@@ -284,8 +277,6 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 		Effect defaultEffect;
 		Texture currentTexture;
 		Matrix batchTransformMatrix;
-
-		VertexDeclaration vertexDeclaration;
 
 		VertexPositionColorTexture[] vertices;
 		short[] indices;
