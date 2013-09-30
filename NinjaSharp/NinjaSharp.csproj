@@ -60,7 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="GameScreen.cs" />
     <Compile Include="GleedLevel.cs" />
+    <Compile Include="ScreenManager.cs" />
     <Compile Include="Spine\SkeletonRenderer.cs" />
     <Compile Include="Graphics\SpriteEffectsEx.cs" />
     <Compile Include="Graphics\SpriteBatchEx.cs" />
