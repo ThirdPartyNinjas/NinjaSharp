@@ -1,9 +1,12 @@
 ﻿using Spine;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ThirdPartyNinjas.NinjaSharp.Graphics
+using ThirdPartyNinjas.NinjaSharp.Graphics;
+
+namespace ThirdPartyNinjas.NinjaSharp.Spine
 {
 	public class SkeletonRenderer
 	{

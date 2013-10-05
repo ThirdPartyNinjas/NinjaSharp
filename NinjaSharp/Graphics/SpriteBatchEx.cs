@@ -2,6 +2,7 @@
 
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Text;
 
 namespace ThirdPartyNinjas.NinjaSharp.Graphics
 {
@@ -11,10 +12,8 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 	// 2) Origins are specified in the range of 0-1, rather than 0-Width
 	// 3) The default cull mode is CullNone, but other modes should work just fine
 	// 4) A new draw function that takes in a transform matrix
-	// 5) DrawString isn't yet implemented
 
 	// todo: Add a method to allow direct vertex access
-	// todo: DrawString functions
 
 	public class SpriteBatchEx
 	{
@@ -34,6 +33,9 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 			this.defaultEffect = defaultEffect;
 
 			ResizeBuffers(maxSprites);
+
+			whitePixel = new Texture2D(graphicsDevice, 1, 1);
+			whitePixel.SetData<Color>(new Color[] { Color.White });
 		}
 
 		public void Begin()
@@ -121,7 +123,7 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 			float width = (sourceRectangle.HasValue) ? sourceRectangle.Value.Width : texture.Width;
 			float height = (sourceRectangle.HasValue) ? sourceRectangle.Value.Height : texture.Height;
 
-			Draw(texture, new Vector2(destinationRectangle.X, destinationRectangle.Y), sourceRectangle, color, rotation, origin, new Vector2(width / destinationRectangle.Width, height / destinationRectangle.Height), effects, Matrix.Identity);
+			Draw(texture, new Vector2(destinationRectangle.X, destinationRectangle.Y), sourceRectangle, color, rotation, origin, new Vector2(destinationRectangle.Width / width, destinationRectangle.Height / height), effects, Matrix.Identity);
 		}
 
 		public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffectsEx effects, Matrix transformMatrix)
@@ -225,6 +227,154 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 			vertices[activeVertices++].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(uvBR.X, uvBR.Y);
 		}
 
+		public void DrawString(SpriteFontEx spriteFont, string text, Vector2 position, Color color)
+		{
+			DrawString(spriteFont, text, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffectsEx.None, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, StringBuilder text, Vector2 position, Color color)
+		{
+			DrawString(spriteFont, text.ToString(), position, color, 0, Vector2.Zero, Vector2.One, SpriteEffectsEx.None, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffectsEx effects, float layerDepth)
+		{
+			DrawString(spriteFont, text, position, color, rotation, origin, new Vector2(scale), effects, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffectsEx effects, float layerDepth)
+		{
+			DrawString(spriteFont, text.ToString(), position, color, rotation, origin, new Vector2(scale), effects, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffectsEx effects, float layerDepth)
+		{
+			DrawString(spriteFont, text, position, color, rotation, origin, scale, effects, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffectsEx effects, float layerDepth)
+		{
+			DrawString(spriteFont, text.ToString(), position, color, rotation, origin, scale, effects, Matrix.Identity);
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffectsEx effects, Matrix transformMatrix)
+		{
+			if (activeVertices == maxVertices || (currentTexture != null && !currentTexture.Equals(spriteFont.Texture)))
+				DrawBuffer();
+
+			Vector2 stringSize = spriteFont.MeasureString(text);
+
+			origin.X *= stringSize.X;
+			origin.Y *= stringSize.Y;
+
+			if ((effects & SpriteEffectsEx.FlipHorizontally) != SpriteEffectsEx.None)
+			{
+				scale.X *= -1;
+				position.X += stringSize.X;
+			}
+			if ((effects & SpriteEffectsEx.FlipVertically) != SpriteEffectsEx.None)
+			{
+				scale.Y *= -1;
+				position.Y += stringSize.Y;
+			}
+
+			currentTexture = spriteFont.Texture;
+
+			float x = 0, y = 0;
+
+			foreach (char c in text)
+			{
+				if (c == '\n')
+				{
+					y += spriteFont.LineSpacing;
+					continue;
+				}
+				if (c == '\r')
+				{
+					x = 0;
+					continue;
+				}
+
+				SpriteFontEx.CharacterData cd = spriteFont[c];
+
+				if (cd.width == 0 || cd.height == 0)
+				{
+					x += cd.advanceX;
+					continue;
+				}
+
+				if (activeVertices == maxVertices)
+					DrawBuffer();
+
+				int width = cd.width;
+				int height = cd.height;
+
+				int textureWidth = currentTexture.Width;
+				int textureHeight = currentTexture.Height;
+
+				Vector3 v;
+				Matrix transform = Matrix.CreateTranslation(x + cd.offsetX, y + cd.offsetY, 0) *
+					Matrix.CreateTranslation(-origin.X, -origin.Y, 0) *
+					Matrix.CreateScale(scale.X, scale.Y, 1.0f) *
+					Matrix.CreateRotationZ(rotation) *
+					Matrix.CreateTranslation(position.X, position.Y, 0) *
+					transformMatrix;
+
+				v = new Vector3(0, 0, 0);
+				v = Vector3.Transform(v, transform);
+
+				vertices[activeVertices].Position = v;
+				vertices[activeVertices].Color = color;
+				vertices[activeVertices++].TextureCoordinate = new Vector2((float)cd.x / textureWidth, (float)cd.y / textureHeight);
+
+				v = new Vector3(width, 0, 0);
+				v = Vector3.Transform(v, transform);
+
+				vertices[activeVertices].Position = v;
+				vertices[activeVertices].Color = color;
+				vertices[activeVertices++].TextureCoordinate = new Vector2((float)(cd.x + cd.width) / textureWidth, (float)cd.y / textureHeight);
+
+				v = new Vector3(0, height, 0);
+				v = Vector3.Transform(v, transform);
+
+				vertices[activeVertices].Position = v;
+				vertices[activeVertices].Color = color;
+				vertices[activeVertices++].TextureCoordinate = new Vector2((float)cd.x / textureWidth, (float)(cd.y + cd.height) / textureHeight);
+
+				v = new Vector3(width, height, 0);
+				v = Vector3.Transform(v, transform);
+
+				vertices[activeVertices].Position = v;
+				vertices[activeVertices].Color = color;
+				vertices[activeVertices++].TextureCoordinate = new Vector2((float)(cd.x + cd.width) / textureWidth, (float)(cd.y + cd.height) / textureHeight);
+
+				x += cd.advanceX;
+			}
+		}
+
+		public void DrawString(SpriteFontEx spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffectsEx effects, Matrix transformMatrix)
+		{
+			DrawString(spriteFont, text.ToString(), position, color, rotation, origin, scale, effects, transformMatrix);
+		}
+
+		public void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
+		{
+			Vector2 diff = end - start;
+			float angle = (float)Math.Atan2(diff.Y, diff.X);
+
+			Draw(whitePixel, (end + start) / 2, null, color, angle, new Vector2(0.5f), new Vector2(diff.Length(), thickness), SpriteEffectsEx.None, 0);
+		}
+
+		public void DrawRectangle(Rectangle rectangle, Color color)
+		{
+			Draw(whitePixel, rectangle, null, color);
+		}
+
+		public void DrawRectangle(Rectangle rectangle, Color color, float rotation, Vector2 origin)
+		{
+			Draw(whitePixel, rectangle, null, color, rotation, origin, SpriteEffectsEx.None, 0);
+		}
+
 		void DrawBuffer()
 		{
 			graphicsDevice.BlendState = blendState;
@@ -275,8 +425,9 @@ namespace ThirdPartyNinjas.NinjaSharp.Graphics
 		bool insideBeginEnd = false;
 		GraphicsDevice graphicsDevice;
 		Effect defaultEffect;
-		Texture currentTexture;
+		Texture2D currentTexture;
 		Matrix batchTransformMatrix;
+		Texture2D whitePixel;
 
 		VertexPositionColorTexture[] vertices;
 		short[] indices;

@@ -57,6 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spine\AtlasPipeline.cs" />
     <Compile Include="Spine\SkeletonDataPipeline.cs" />
+    <Compile Include="SpriteFontExPipeline.cs" />
     <Compile Include="TextureAtlas\TextureAtlasContent.cs" />
     <Compile Include="TextureAtlas\TextureAtlasImporter.cs" />
     <Compile Include="TextureAtlas\TextureAtlasProcessor.cs" />
@@ -64,13 +65,13 @@
     <Compile Include="TextureAtlas\TextureRegionContent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NinjaSharp\NinjaSharp.csproj">
-      <Project>{DAD05F62-37B7-4878-819C-562B697716E7}</Project>
-      <Name>ThirdPartyNinjas.NinjaSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\spine-runtimes\spine-csharp\spine-csharp_xna.csproj">
+    <ProjectReference Include="..\..\spine-runtimes\spine-csharp\spine-csharp_xna.csproj">
       <Project>{DF7AAFE1-401E-4278-8F9A-3DD2B8CC3D0A}</Project>
       <Name>spine-csharp_xna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NinjaSharp\NinjaSharp.csproj">
+      <Project>{DAD05F62-37B7-4878-819C-562B697716E7}</Project>
+      <Name>NinjaSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

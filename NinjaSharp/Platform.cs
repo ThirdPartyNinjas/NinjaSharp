@@ -1,6 +1,6 @@
 ﻿namespace ThirdPartyNinjas.NinjaSharp
 {
-	public enum Platform
+	public enum PlatformType
 	{
 		Windows,
 	}
